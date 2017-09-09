@@ -24778,7 +24778,9 @@ new Vue({
 		this.getKeeps();
 	},
 	data: {
-		keeps: []
+		keeps: [],
+		newKeeps: '',
+		errors: []
 	},
 	methods: {
 		getKeeps: function(){
@@ -24794,6 +24796,20 @@ new Vue({
 				toastr.success('Eliminado correctamente');//Mandamos mensaje
 			});
 
+		},
+		createKeep: function(){
+			var url = 'tasks';
+			axios.post(url, {
+				keep: this.newKeep
+			}).then(response => {
+				this.getKeeps();
+				this.newKeep = '';
+				this.errors = [];
+				$('#create').modal('hide');
+				toastr.success('Nueva tarea creada con exito');
+			}).catch(error => {
+				this.errors = error.response.data
+			});
 		}
 	}
 });
