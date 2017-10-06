@@ -24779,7 +24779,8 @@ new Vue({
 	},
 	data: {
 		keeps: [],
-		newKeeps: '',
+		newKeep: '',
+		fillKeep: { 'id': '', 'keep': '' },
 		errors: []
 	},
 	methods: {
@@ -24789,11 +24790,28 @@ new Vue({
 				this.keeps = response.data
 			});
 		},
+		editKeep: function(keep){
+			this.fillKeep.id = keep.id;
+			this.fillKeep.keep = keep.keep;
+			$('#edit').modal('show');
+		},
+		updateKeep: function(id){
+			var url = 'tasks/' + id;
+			axios.put(url, this.fillKeep).then(response => {
+				this.getKeeps();
+				this.fillKeep = {'id': '', 'keep': ''};
+				this.errors = [];
+				$('#edit').modal('hide');
+				toastr.success('Tarea actualizada correctamente');
+			}).catch(error => {
+				this.errors = error.response.data
+			});
+		},
 		deleteKeep: function(keep){
 			var url = 'tasks/' + keep.id;
 			axios.delete(url).then(response => {//Eliminamos
 				this.getKeeps();//Listamos
-				toastr.success('Eliminado correctamente');//Mandamos mensaje
+				toastr.warning('Eliminado correctamente');//Mandamos mensaje
 			});
 
 		},
@@ -24806,10 +24824,12 @@ new Vue({
 				this.newKeep = '';
 				this.errors = [];
 				$('#create').modal('hide');
-				toastr.success('Nueva tarea creada con exito');
+				toastr.info('Nueva tarea creada con exito');
 			}).catch(error => {
 				this.errors = error.response.data
 			});
-		}
+		},
+
+
 	}
 });
